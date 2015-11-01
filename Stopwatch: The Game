@@ -1,0 +1,113 @@
+# Monday, October 26, 2015
+# Stopwatch: The Game
+
+import simplegui
+
+# define global variables
+# A counter that's called by the timer every 0.1s
+tenthsOfSeconds = 0
+# Tracks the total amount of times the Stop button is hit
+totalStops = 0
+# Updated if the stopwatch stops on a whole second
+successfulStops = 0
+
+def format(t):
+    """
+    Given an input in tenths of seconds, this function 
+    converts it into the form 
+    A:BC.D (minutes : seconds.tenths of seconds)
+    """
+    # Tenths of seconds will always be the last digit
+    d = str(t % 10) 
+    # Slice off the last digit so only whole seconds remain
+    t = t // 10
+    # Any amount of seconds divided by 60 gives the minutes 
+    a = str(t // 60)
+    # Get the leftover seconds
+    t = t % 60
+    # Single seconds
+    c = str(t % 10)
+    # Tens of seconds
+    b = str(t // 10)
+    return a + ":" + b + c + "." + d
+    
+# define event handlers for buttons; "Start", "Stop", "Reset"
+def start_handler():
+    """
+    If the timer is not running, turn it on. Otherwise, do nothing.
+    """
+    if not timer.is_running():
+        timer.start()
+
+def stop_handler():
+    """
+    If the timer is running, stop it and update the global
+    variables that track total stops and successful stops.
+    Using the is_running() function here avoids the need for 
+    a global variable to prevent the Stop button from 
+    altering the counters that keep track of stops.
+    """
+    if timer.is_running():
+        timer.stop()
+        global totalStops
+        totalStops += 1
+        check_stop()
+
+def check_stop():
+    """
+    If the program was stopped on a whole second (i.e., without
+    any tenths of seconds), increment the successfulStop global 
+    variable.
+    """
+    global tenthsOfSeconds, successfulStops
+    if tenthsOfSeconds % 10 == 0:
+        successfulStops += 1
+        
+def reset_handler():
+    """
+    Stop the timer and reset all the global variables
+    """
+    global tenthsOfSeconds, successfulStops, totalStops
+    timer.stop()
+    tenthsOfSeconds = 0
+    successfulStops = 0
+    totalStops = 0
+    
+# define event handler for timer with 0.1 sec interval
+def timer_handler():
+    """
+    Updates the tenthsOfSeconds global variable every 0.1 seconds
+    """
+    global tenthsOfSeconds
+    tenthsOfSeconds += 1
+
+# define draw handler
+def draw_handler(canvas):
+    """
+    Keep drawing the stopwatch and the two counters above it
+    """
+    global successfulStops, totalStops, tenthsOfSeconds
+    
+    # The two counters are printed in the upper left with a "/" between
+    canvas.draw_text(str(successfulStops), (325, 65), 70, 'Red')
+    canvas.draw_text("/", (400, 65), 70, 'Red')
+    canvas.draw_text(str(totalStops), (425, 65), 70, 'Red')
+    
+    # Convert the tenthsOfSeconds global variable to the A:BC.D
+    # format and then print it in the middle of the screen
+    canvas.draw_text(format(tenthsOfSeconds), (150, 225), 80, 'White')
+            
+# create frame
+frame = simplegui.create_frame('Stopwatch: The Game', 500, 400)
+
+# add start, stop, and reset buttons
+start_button = frame.add_button('Start', start_handler, 200)
+stop_button = frame.add_button('Stop', stop_handler, 200)
+reset_button = frame.add_button('Reset', reset_handler, 200)
+
+# register event handlers
+frame.set_draw_handler(draw_handler)
+timer = simplegui.create_timer(100, timer_handler)
+
+# start frame
+frame.start()
