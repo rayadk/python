@@ -1,0 +1,121 @@
+# Monday, October 19, 2015
+
+# "Guess the number"
+# input will come from buttons and an input field
+# all output for the game will be printed in the console
+
+import simplegui, random
+
+secret_number = 0 # holds the number the user has to guess
+max_guesses = 0 # holds the number of guesses the user has
+num_range = 0 # holds the range the user has to guess from (100 or 1000)
+
+# helper function to start and restart the game
+def new_game():
+    """
+    Initalizes the global variable "secret_number" and prompts the user 
+    for input within a specific range and by a specific number of guesses
+    """
+    # The global variable "num_range" is set in the range100/0 functions
+    global secret_number
+    
+    # Initialize secret_number to a value from 0 to "num_range"
+    secret_number = random.randrange(0, num_range)
+    
+    # Separate new games with a blank line
+    print "\n"
+    
+    # Helpful for debugging
+    #print "secret_number is", secret_number
+    
+    # Convert num_range to a string so it can be printed without extra spaces around it
+    str_num_range = str(num_range)
+    
+    # User prompts
+    print "Welcome! Guess the secret number: [0," + str_num_range + ")"
+    print "You have", max_guesses,"guesses"
+
+# define event handlers for control panel
+def range100():
+    """
+    Sets the global variables "max_guesses" to 7 and "num_range" to 100
+    before starting a new game
+    """
+    global max_guesses
+    max_guesses = 7
+    global num_range
+    num_range = 100
+    new_game()
+
+def range1000():
+    """
+    Sets the global variables "max_guesses" to 10 and "num_range" to 1000
+    before starting a new game
+    """
+    global max_guesses
+    max_guesses = 10
+    global num_range
+    num_range = 1000
+    new_game()
+
+def check_num_range():
+    """
+    Checks the global variable "num_range" to determine what range of
+    game to start, either one with a number range of 100 or 1000
+    """
+    if num_range == 100:
+        range100()
+    else:
+        range1000()
+    
+def input_guess(guess):
+    """
+    Prints the user's guess to the console and then checks it against
+    the secret number. Prints appropriate messeages for each outcome
+    and starts a new game immediate after.
+    """
+    # Convert the input to an integer so it can be compared against the secret number
+    user_input = int(guess)
+    
+    # Echo back what the user entered
+    print "Guess was", user_input
+    
+    # Reference the global variable that controls gameplay to modify it
+    global max_guesses        
+    
+    # Check the user's guess against the secret number as long as 
+    # max_guesses is greater than 0
+    if max_guesses > 0:
+        # Decrement the user's remaining guesses
+        max_guesses = max_guesses - 1
+        # If the user guessed the secret number, print a message and start a new game
+        if user_input == secret_number:
+            print "Bingo! You won with", max_guesses, "guess(es) to spare!"
+            check_num_range()
+        # Direct the user on how to guess again and show remaining guesses
+        elif user_input < secret_number:
+            print "Higher!", max_guesses, "guess(es) remaining."
+        # Direct the user on how to guess again and show remaining guesses
+        elif user_input > secret_number:
+            print "Lower!", max_guesses, "guess(es) remaining."
+            
+    # If the user has run out of guesses, end the game and start another
+    if max_guesses == 0:
+        print "Sorry, you lost! The secret number was " + str(secret_number)
+        print "Try the Binary Search algorithm next time."
+        print "Starting a new game..."
+        check_num_range()
+        
+# create frame
+frame = simplegui.create_frame('Guess the number', 200, 200)
+
+# register event handlers for control elements and start frame
+frame.add_button('Range is [0,100)', range100, 150)
+frame.add_button('Range is [0,1000)', range1000, 150)
+frame.add_input('Guess', input_guess, 200)
+
+# call new_game
+range100()
+
+# Start the frame
+frame.start()
