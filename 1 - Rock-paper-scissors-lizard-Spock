@@ -92,7 +92,7 @@ def rpsls(player_choice):
     else:
         print "Player wins!"
     
-# test your code - THESE CALLS MUST BE PRESENT IN YOUR SUBMITTED CODE
+# submit calls to initiate a run of the game
 rpsls("rock")
 rpsls("Spock")
 rpsls("paper")
