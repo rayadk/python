@@ -5,4 +5,4 @@ The class used CodeSkulptor (http://www.codeskulptor.org/), a web-based Python d
 
 From a technical perspective, the games were either console-based, GUI-based, or blended. For the latter categories, they followed an event-driven model that made use of input fields, buttons, and timers.
 
-To run any of these scripts, copy the code and paste it into CodeSkulptor. You don't have to install anything but you must have Javascript enabled as CodeSkulptor was built on it. CodeSkulptor should NOT be run in Internet Explorer.
+To run any of these scripts, simply copy and paste the code into CodeSkulptor. You don't have to install anything but you must have Javascript enabled. Finally, don't run CodeSkulptor in Internet Explorer.
