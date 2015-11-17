@@ -1,0 +1,234 @@
+# Pong
+# A simple implement of this classic arcade game
+
+import simplegui
+import random
+
+# initialize globals - pos and vel encode vertical info for paddles
+WIDTH = 600 # canvas width
+HEIGHT = 400 # canvas height
+BALL_RADIUS = 20 # radius of the ball
+LINE_THICKNESS = 3 # line thickness of the ball
+PAD_WIDTH = 8 # width of the paddles
+PAD_HEIGHT = 80 # height of the paddles
+HALF_PAD_WIDTH = PAD_WIDTH / 2
+HALF_PAD_HEIGHT = PAD_HEIGHT / 2
+LEFT = False # used to determine which direction to respawn the ball
+RIGHT = True # used to determine which direction to respawn the ball
+ball_pos = [0, 0] # the ball's position
+ball_vel = [0, 0] # the ball's velocity
+paddle1_pos = 0 # y-coordinate of the left paddle
+paddle2_pos = 0 # y-coordinate of the right paddle
+paddle1_vel = 0 # left paddle velocity
+paddle2_vel = 0 # right paddle velocity
+VELOCITY = 10 # how quickly the paddles move
+left_score = 0 # left player's score
+right_score = 0 # right player's score
+SPEED_BUMP = 0.2 # speed bump for the ball after it strikes a paddle
+
+def spawn_ball(direction):
+    """
+    Sets the ball's initial position and velocity
+    """
+    global ball_pos, ball_vel # these are vectors stored as lists
+    
+    # spawn the ball in the middle of the table
+    ball_pos = [WIDTH / 2, HEIGHT / 2]
+    
+    # if direction is true, set the initial velocity 
+    # upward (y component) and to the left (x component)
+    if direction:
+        ball_vel[0] = random.randrange(120, 240) / 60
+        ball_vel[1] = -random.randrange(60, 180) / 60
+    # otherwise, set it upward and to the right
+    else:
+        ball_vel[0] = -random.randrange(120, 240) / 60
+        ball_vel[1] = -random.randrange(60, 180) / 60
+        
+# define event handlers
+def new_game():
+    """
+    Resets all the global variables that change and spawns a new ball towards the left
+    """
+    global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel  # these are numbers
+    global left_score, right_score  # these are ints
+    
+    paddle1_pos = 0
+    paddle2_pos = 0
+    paddle1_vel = 0
+    paddle2_vel = 0
+    left_score = 0
+    right_score = 0
+    
+    # for a new game, spawn the ball towards the upper left
+    spawn_ball(False)
+
+def draw(canvas):
+    """
+    See inline comments for different actions done
+    """
+    global left_score, right_score, paddle1_pos, paddle2_pos, ball_pos, ball_vel, RIGHT, LEFT, PAD_HEIGHT
+    
+    # draw mid-line and gutters
+    canvas.draw_line([WIDTH / 2, 0],[WIDTH / 2, HEIGHT], 1, "White")
+    canvas.draw_line([PAD_WIDTH, 0],[PAD_WIDTH, HEIGHT], 1, "White")
+    canvas.draw_line([WIDTH - PAD_WIDTH, 0],[WIDTH - PAD_WIDTH, HEIGHT], 1, "White")
+        
+    # update ball's position by adding the velocity to it
+    ball_pos[0] += ball_vel[0]
+    ball_pos[1] += ball_vel[1]
+    
+    # bounce the ball off the top by reversing its y-component
+    if ball_pos[1] <= BALL_RADIUS:
+        ball_vel[1] = -ball_vel[1]
+    
+    # bounce the ball off the bottom by also reversing its y-component
+    if ball_pos[1] >= HEIGHT - BALL_RADIUS:
+        ball_vel[1] = -ball_vel[1]
+    
+    # handle what happens if the ball hits the left or right sides
+    handleCollisons()
+    
+    # draw ball
+    canvas.draw_circle(ball_pos, BALL_RADIUS, LINE_THICKNESS, 'Red', 'Blue')
+    
+    # update the paddles' vertical positions
+    updatePaddles()
+    
+    # draw left and right paddles
+    # coordinates are listed in clockwise order starting from the upper left
+    canvas.draw_polygon([[0, paddle1_pos], [PAD_WIDTH, paddle1_pos], [PAD_WIDTH, PAD_HEIGHT + paddle1_pos], [0, PAD_HEIGHT + paddle1_pos]], LINE_THICKNESS, 'Green', 'Yellow')
+    canvas.draw_polygon([[WIDTH - PAD_WIDTH, paddle2_pos], [WIDTH, paddle2_pos], [WIDTH, paddle2_pos + PAD_HEIGHT], [WIDTH - PAD_WIDTH, paddle2_pos + PAD_HEIGHT]], LINE_THICKNESS, 'Yellow', 'Green')
+    
+    # draw scores towards the middle of the screen
+    canvas.draw_text(str(left_score), (WIDTH/3, HEIGHT/2), 48, 'White', 'sans-serif')
+    canvas.draw_text(str(right_score), (WIDTH/3*2, HEIGHT/2), 48, 'White', 'sans-serif')
+    
+    # print the ball speed at the bottom of the canvas
+    canvas.draw_text("x-velocity = " + str(ball_vel[0]) + ", y-velocity = " + str(ball_vel[1]), (3+WIDTH/2, HEIGHT), 12, 'Gray', 'sans-serif')
+
+def handleCollisons():
+    """
+    Handles the ball colliding with either the left or right sides and their respective paddles
+    """
+    global ball_pos, ball_vel, PAD_WIDTH, PAD_HEIGHT, BALL_RADIUS, WIDTH, paddle1_pos, paddle2_pos, right_score, left_score
+    
+    # respawn to the right if the ball hits the left gutter and update the right player's score
+    # otherwise, bounce the ball and bump the speed
+    if((ball_pos[0] <= PAD_WIDTH + BALL_RADIUS) and (ball_pos[1] >= paddle1_pos) and (ball_pos[1] <= (paddle1_pos + PAD_HEIGHT))):
+        ball_vel[0] = - ball_vel[0]
+        bumpSpeed()
+    elif ball_pos[0] <= PAD_WIDTH + BALL_RADIUS:
+        spawn_ball(RIGHT)
+        right_score += 1
+        
+    # respawn to the left if the ball hits the right gutter and update the left player's score
+    # otherwise, bounce the ball and bump the speed
+    if((ball_pos[0] >= WIDTH - (PAD_WIDTH + BALL_RADIUS)) and (ball_pos[1] >= paddle2_pos) and (ball_pos[1] <= (paddle2_pos + PAD_HEIGHT))):
+        ball_vel[0] = - ball_vel[0]
+        bumpSpeed()
+    elif ball_pos[0] >= WIDTH - (PAD_WIDTH + BALL_RADIUS):
+        spawn_ball(LEFT)
+        left_score += 1
+    
+def bumpSpeed():
+    """
+    Increase the ball's speed whenever it strikes a paddle
+    """
+    global ball_vel, SPEED_BUMP
+    
+    # each component of the velocity can be negative or positive
+    # if positive, add the bump as is
+    # otherwise, negative the bump first and then add it
+    
+    # update x-component
+    if ball_vel[0] >= 0:
+        ball_vel[0] += SPEED_BUMP   
+    else:
+        ball_vel[0] += -SPEED_BUMP
+    
+    # update y-component
+    if ball_vel[1] >= 0:
+        ball_vel[1] += SPEED_BUMP   
+    else:
+        ball_vel[1] += -SPEED_BUMP
+    
+def updatePaddles():
+    """
+    Updates the vertical position of the paddles so long as doing so won't take them off screen
+    """
+    global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel, PAD_HEIGHT, HEIGHT
+    
+    # if the paddle's current position plus the new displacement is between
+    # 0 and the HEIGHT, only then add the displacement
+    
+    # left paddle
+    if(((paddle1_pos + paddle1_vel) >= 0) and ((paddle1_pos + PAD_HEIGHT + paddle1_vel) <= HEIGHT)):
+        paddle1_pos += paddle1_vel
+    
+    # right paddle
+    if(((paddle2_pos + paddle2_vel) >= 0) and ((paddle2_pos + PAD_HEIGHT + paddle2_vel) <= HEIGHT)):
+        paddle2_pos += paddle2_vel        
+    
+def keydown(key):
+    """
+    When the w, s, up arrown, and down arrow keys are pressed, move the paddles
+    """
+    global paddle1_vel, paddle2_vel, VELOCITY
+    
+    # the key argument holds a number representation of the key that was pressed
+    # KEY_MAP converts its parameter to its numerical representation for comparison
+    
+    # paddles are raised and lowered by a constant velocity
+    
+    # if w is pressed, raise the left paddle
+    if key == simplegui.KEY_MAP["w"]:
+        paddle1_vel -= VELOCITY
+    # if s, lower the left paddle
+    elif key == simplegui.KEY_MAP["s"]:
+        paddle1_vel += VELOCITY
+    # if up arrow, raise the right paddle
+    elif key == simplegui.KEY_MAP["up"]:
+        paddle2_vel -= VELOCITY
+    # if down arrow, lower the right paddle
+    elif key == simplegui.KEY_MAP["down"]:
+        paddle2_vel += VELOCITY 
+   
+def keyup(key):
+    """
+    When the w, s, up arrown, and down arrow keys are released, slow down the paddles
+    """
+    global paddle1_vel, paddle2_vel, VELOCITY
+    
+    # paddles are raised and lowered by a constant velocity
+    
+    # these commands are the inverse of what's in the keydown event handler
+    if key == simplegui.KEY_MAP["w"]:
+        paddle1_vel += VELOCITY
+    elif key == simplegui.KEY_MAP["s"]:
+        paddle1_vel -= VELOCITY
+    elif key == simplegui.KEY_MAP["up"]:
+        paddle2_vel += VELOCITY
+    elif key == simplegui.KEY_MAP["down"]:
+        paddle2_vel -= VELOCITY 
+
+# create frame
+frame = simplegui.create_frame("Pong", WIDTH, HEIGHT)
+frame.set_draw_handler(draw)
+frame.set_keydown_handler(keydown)
+frame.set_keyup_handler(keyup)
+
+# restart button
+button_new_game = frame.add_button('New Game', new_game, 200)
+
+# message about the controls for the game
+msg_space = frame.add_label(' ')
+msg_controls1 = frame.add_label('Raise/lower the Left paddle using the w/s keys')
+msg_space = frame.add_label(' ')
+msg_controls2 = frame.add_label('Raise/lower the Right paddle using the up/down arrow keys')
+msg_space2 = frame.add_label(' ')
+msg_controls3 = frame.add_label('Ball increases in speed by ' + str(SPEED_BUMP) + ' pixels/second every time a paddle is struck')
+
+# start frame
+new_game()
+frame.start()
