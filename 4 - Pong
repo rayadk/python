@@ -1,5 +1,19 @@
+# Saturday, November 7, 2015
 # Pong
-# A simple implement of this classic arcade game
+
+# This is a simple implement of this classic arcade game
+# whereby two players (or just one!) hits the ball back
+# and forth until they reach some pre-determined victory
+# score. 
+#
+# The ball bounces off the top and bottom walls and
+# off the paddles. If it hits the gutter, a score is 
+# recorded for the opposite player. At the beginning of 
+# the game, the ball spawns upward and to the left. When 
+# the ball falls in the gutter, it spawns towards the
+# opposite side.
+
+# Input comes from the keyboard and all output is in the GUI
 
 import simplegui
 import random
