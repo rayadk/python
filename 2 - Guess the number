@@ -1,8 +1,18 @@
 # Monday, October 19, 2015
+# Guess the number
 
-# "Guess the number"
-# input will come from buttons and an input field
-# all output for the game will be printed in the console
+# The user plays a guessing game in this program to figure out
+# the secret number that's either in the range of 0 to 100 or
+# 0 to 1000. In the former case, they have 7 guesses to figure it
+# out and in the latter case, 10 guesses. A new game immediately starts
+# after one game ends, successfully or unsuccessfully.
+#
+# The trick in this game is to use keep guessing half the range until
+# you get the right number. This is a simple application of the
+# Binary Search algorithm.
+
+# Input will come from buttons and an input field
+# All output will be printed in the console
 
 import simplegui, random
 

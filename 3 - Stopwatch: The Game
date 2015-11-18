@@ -1,6 +1,15 @@
 # Monday, October 26, 2015
 # Stopwatch: The Game
 
+# This game creates a stop watch and allows the user to 
+# start and stop it. The object of the game is to stop the
+# watch on a full second (i.e., with no tenths of seconds).
+# The counters at the top keep track of total stops and 
+# successful stops. Hitting the reset button returns
+# everything to zero.
+
+# Input comes from buttons and output is shown in the GUI
+
 import simplegui
 
 # define global variables
