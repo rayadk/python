@@ -6,7 +6,7 @@ The class used CodeSkulptor (http://www.codeskulptor.org/), a web-based Python d
 From a technical perspective, the games were either console-based, GUI-based, or blended. For the latter categories, they followed an event-driven model that made use of input fields, buttons, and timers. They also leveraged keyboard input. Data structures like lists and tuples were also used.
 
 # Running these scripts
-To run these scripts, click on any of these links:
+To run these scripts, click on their corresponding links and hit the play button to begin:
 
 ```Rock-paper-scissors-lizard-Spock``` - http://www.codeskulptor.org/#user40_JKfBKeao2bS4V4u.py
 
@@ -16,6 +16,6 @@ To run these scripts, click on any of these links:
 
 ```Pong``` - http://www.codeskulptor.org/#user40_ddTD4BZHw5IvRt3.py
 
-Alternatively, copy and paste the code into CodeSkulptor and hit the play button. You don't have to install anything but you must have Javascript enabled and allow pop-up windows.
+You don't have to install anything but you must have Javascript enabled and allow pop-up windows. Most any browser, aside from Internet Explorer, will work.
 
-Pro-tip: Don't use Internet Explorer for this or anything else in general :)
+Note: If there's a problem with any of the links, just copy and paste the code into CodeSkulptor and hit play to run it.
