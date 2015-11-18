@@ -1,15 +1,14 @@
 # Saturday, October 17, 2015
 # Rock-paper-scissors-lizard-Spock
 
-# The key idea of this program is to equate the strings
-# "rock", "paper", "scissors", "lizard", "Spock" to numbers
-# as follows:
-#
-# 0 - rock
-# 1 - Spock
-# 2 - paper
-# 3 - lizard
-# 4 - scissors
+# This program plays five automatic games of 
+# rock-paper-scissors-lizard-Spock. The player's 
+# choices are passed in as arguments to the rpsls()
+# function while the computer's choices are generated 
+# on the fly. The output is determined and printed 
+# to the console.
+
+# No user input is taken and output is printed to the console
 
 import random
 
@@ -92,7 +91,7 @@ def rpsls(player_choice):
     else:
         print "Player wins!"
     
-# submit calls to initiate a run of the game
+# test code
 rpsls("rock")
 rpsls("Spock")
 rpsls("paper")
