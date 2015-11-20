@@ -1,0 +1,163 @@
+# Thursday, November 19, 2015
+# Memory
+
+#Memory is a card game in which the player deals out a 
+#set of cards face down. In Memory, a turn (or a move) 
+#consists of the player flipping over two cards. If they
+#match, the player leaves them face up. If they don't 
+#match, the player flips the cards back face down. The
+#goal of Memory is to end up with all of the cards 
+#flipped face up in the minimum number of turns.
+
+import simplegui
+import random
+
+# global variables
+WIDTH = 800 # width of the canvas
+HEIGHT = 100 # height of the canvas
+BORDER = 2 # constant used for the borders of the cards
+deck = [] # holds the deck of numbers
+exposed = [] # keeps track of if the cards are exposed or not
+click_state = 0 # keeps track of how many cards are flipped 
+card_1_index = 17 # the index of the first flipped card
+card_2_index = 17 # the index of the second flipped card
+turn_counter = 0 # the turn counter
+
+# helper function to initialize globals
+def new_game():
+    """
+    Resets all the global variables and lists
+    """
+    # variables
+    global deck, exposed, click_state 
+    global card_1_index, card_2_index, turn_counter
+    num_range = 8
+    
+    # set two lists to have the same values of [0,8)
+    first_half = range(num_range)
+    second_half = range(num_range)
+    # assign both to deck to have two copies of each number
+    deck = first_half + second_half
+    
+    # shuffle the deck
+    random.shuffle(deck)
+    
+    # set exposed to be the same length as deck
+    exposed = range(len(deck))
+    
+    # set all of exposed's values to false so no card will be displayed
+    for i in range(len(deck)):
+        exposed[i] = False
+    
+    # reset the other single variables
+    click_state = 0 # indicates no card is flipped
+    card_1_index = 17 # a number outside the range of deck and exposed
+    card_2_index = 17 # a number outside the range of deck and exposed
+    turn_counter = 0 # the score
+    
+# define event handlers
+def mouseclick(pos):
+    """
+    Track each mouse click and flip cards accordingly
+    """
+    # variables
+    global WIDTH, deck, exposed, click_state
+    global card_1_index, card_2_index, turn_counter
+    # keeps track of the the width of each card
+    letter_spacing = WIDTH / len(deck)
+    
+    # the pos parameter is a tuple of the x,y coordinates of the mouse
+    # get the x coordinate and determine which card was clicked
+    index = pos[0] / letter_spacing
+    
+    # if that card is unflipped, then flip it
+    # otherwise, ignore the click
+    if exposed[index] == False:
+        exposed[index] = True
+        
+        # state goes from 0 to 1 to 2 to 1 to 2....
+        # this is how many cards are exposed
+        # update the state if the click is not a previously exposed card
+        # keep track of the card (index) that was clicked
+        if click_state == 0:
+            # first card
+            click_state = 1
+            card_1_index = index
+        elif click_state == 1:
+            # second card
+            click_state = 2
+            card_2_index = index
+            # update the turn counter here
+            turn_counter += 1
+        else:
+            click_state = 1
+            # on the third card flip, compare the values
+            # of the first two cards
+            # if they're unequal, hide them
+            # otherwise, leave them exposed
+            if deck[card_1_index] != deck[card_2_index]:
+                exposed[card_1_index] = False
+                exposed[card_2_index] = False
+            # now, save the index of the third card
+            card_1_index = index
+            # reset the index of the second card
+            card_2_index = 17
+                            
+def draw(canvas):
+    """
+    Prints the cards, flipped or hidden, as well as their 
+    borders, and updates the turn counter in label
+    """
+    # variables
+    global deck, WIDTH, HEIGHT, BORDER, turn_counter, label
+    # initial position to print the first number
+    letter_x = 10 
+    letter_y = 70
+    # the width of each card
+    letter_spacing = WIDTH / len(deck)
+    # the spacing for each blank card
+    blank_spacing = 0
+    
+    # iterate through the deck and print either 
+    # an unexposed card (in green) or the number
+    for i in range(len(deck)):
+        # if the value in the exposed list is true
+        if exposed[i] == True:
+            # print the value of the card
+            canvas.draw_text(str(deck[i]), (letter_x, letter_y), 60, 'Red')
+        else:
+            # otherwise, print an unexposed card as a green rectangle
+            canvas.draw_polygon([[blank_spacing, 0], 
+                                 [blank_spacing + letter_spacing, 0], 
+                                 [blank_spacing + letter_spacing, HEIGHT], 
+                                 [blank_spacing, HEIGHT]], 
+                                BORDER, 'Green', 'Green')
+        # increment the spacing for both by the same factor
+        letter_x += letter_spacing
+        blank_spacing += letter_spacing
+    
+    # draw a white rectangle border around all the cards
+    canvas.draw_polygon([(0, 0), (WIDTH, 0), (WIDTH, HEIGHT), 
+                         (0, HEIGHT)], BORDER, 'White')
+    # draw lines separating each card
+    for position in range(0, WIDTH, letter_spacing):
+        canvas.draw_line([position, 0],[position, HEIGHT], 
+                         BORDER, 'White')
+    
+    # update the text in label with the number of turns
+    label.set_text("Turns = " + str(turn_counter))
+
+# create frame and add a button and labels
+frame = simplegui.create_frame("Memory", WIDTH, HEIGHT)
+frame.add_button("Reset", new_game)
+
+# text for this gets updated in the draw handler
+label = frame.add_label("Turns = " + str(turn_counter))
+
+# register event handlers
+frame.set_mouseclick_handler(mouseclick)
+frame.set_draw_handler(draw)
+
+# get things rolling
+new_game()
+frame.start()
