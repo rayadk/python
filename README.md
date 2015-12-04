@@ -16,6 +16,8 @@ To run any of the games, click on their corresponding links and hit the play but
 
 ```Memory``` - http://www.codeskulptor.org/#user40_WUzHfB2xjzexdmk.py
 
+```BlackJack``` - http://www.codeskulptor.org/#user40_tPDKdciBwjqzdOW.py
+
 You don't have to install anything but you must have Javascript enabled and allow pop-up windows. Most any browser, aside from Internet Explorer, will work. Since some games require keyboard and mouse input, you'll want to run them on an appropriate platform.
 
 Note: If there's a problem with any of the links, just copy and paste the code into CodeSkulptor and hit play to run it.
