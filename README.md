@@ -18,7 +18,7 @@ To run any of the games, click on their corresponding links and hit the play but
 
 ```BlackJack``` - http://www.codeskulptor.org/#user40_tPDKdciBwjqzdOW.py
 
-```Asteriods``` - http://www.codeskulptor.org/#user40_0jA71tbX3ZEmTSy.py
+```Asteriods``` - http://www.codeskulptor.org/#user40_tcfbpciVRRoRos2.py
 
 You don't have to install anything but you must have Javascript enabled and allow pop-up windows. Chrome is highly recommended (required for Asteriods!) but Firefox and Safari will also do.  Do not use Internet Explorer, ever. Since some games require keyboard and mouse input, you'll want to run them on an appropriate platform.
 

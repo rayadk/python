@@ -150,7 +150,11 @@ class Ship:
     def draw(self,canvas):
         """ Draws the ship with thrusters on/off """
         # if the thrusters are on, draw that image of the ship, otherwise, draw the regular ship
-        canvas.draw_image(self.image, self.image_center, self.image_size, self.pos, self.image_size, self.angle)
+        if self.thrust:
+            canvas.draw_image(self.image, self.thrusting_center, self.image_size, self.pos, self.image_size, self.angle)
+        else:
+            canvas.draw_image(self.image, self.image_center, self.image_size, self.pos, self.image_size, self.angle)
+
         
     def update(self):
         """ Update the ship's position, velocity, and orientation """
